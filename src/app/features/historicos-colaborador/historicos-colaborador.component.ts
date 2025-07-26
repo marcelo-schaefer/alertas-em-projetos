@@ -72,9 +72,7 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
   async buscaPapeisSolicitante(): Promise<void> {
     try {
       const projetos = await firstValueFrom(
-        this.informacoesColaboradorService.obterPapelSolicitante(
-          'senior.murilo'
-        )
+        this.informacoesColaboradorService.obterPapelSolicitante()
       );
       if (projetos.outputData.message) {
         this.notificarErro(

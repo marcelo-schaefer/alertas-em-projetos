@@ -11,6 +11,7 @@ import {
 import { RetornoGravacao } from './models/retorno-gravacao';
 import { Persistencia } from './models/persistencia';
 import { CorpoBusca } from './models/corpo-busca';
+import { TokenService } from '../../../core/services/token.service';
 
 @Injectable({
   providedIn: 'root',
@@ -31,10 +32,10 @@ export class InformacoesColaboradorService {
   };
 
   private http = inject(HttpClient);
+  private tokenService = inject(TokenService);
 
-  public obterPapelSolicitante(
-    aNomeUsuario: string
-  ): Observable<RetornoPapelColaborador> {
+  public obterPapelSolicitante(): Observable<RetornoPapelColaborador> {
+    const aNomeUsuario = this.tokenService.username;
     return this.http.post<RetornoPapelColaborador>(environment.plugin.invoke, {
       ...this.basePayload,
       inputData: {
