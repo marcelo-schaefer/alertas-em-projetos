@@ -1,8 +1,7 @@
 <app-loading [loading]="carregandoInformacoes()">
   <p-toast />
 
-  <app-dados-projeto
+  <app-busca-colaboradores
     (enviarSolicitacao)="enviarSolicitacao()"
-    (colaboradorEmitter)="inicializarBuscaColaboradores($event)"
-  ></app-dados-projeto>
+  ></app-busca-colaboradores>
 </app-loading>

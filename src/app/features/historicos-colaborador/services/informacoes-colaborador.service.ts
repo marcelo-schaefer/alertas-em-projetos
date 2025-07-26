@@ -3,13 +3,14 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
-import { Colaborador, RetornoColaborador } from './models/colaborador.model';
+import {
+  Colaborador,
+  RetornoColaborador,
+  RetornoPapelColaborador,
+} from './models/colaborador.model';
 import { RetornoGravacao } from './models/retorno-gravacao';
 import { Persistencia } from './models/persistencia';
-import { RetornoProjeto } from './models/projeto.model';
 import { CorpoBusca } from './models/corpo-busca';
-import { BuscaLancamentos } from './models/busca-lancamentos';
-import { RetornoLancamento } from './models/lancamento';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +22,7 @@ export class InformacoesColaboradorService {
       encryption: '3',
       server: 'https://ocweb03s1p.seniorcloud.com.br:31061/',
       module: 'rubi',
-      service: 'com.senior.g5.rh.fp.agendaEquipe',
+      service: 'com.senior.g5.rh.fp.apontamentoRetroativo',
       port: '',
       user: '',
       password: '',
@@ -31,12 +32,15 @@ export class InformacoesColaboradorService {
 
   private http = inject(HttpClient);
 
-  public obterListaProjetos(): Observable<RetornoProjeto> {
-    return this.http.post<RetornoProjeto>(environment.plugin.invoke, {
+  public obterPapelSolicitante(
+    aNomeUsuario: string
+  ): Observable<RetornoPapelColaborador> {
+    return this.http.post<RetornoPapelColaborador>(environment.plugin.invoke, {
       ...this.basePayload,
       inputData: {
         ...this.basePayload.inputData,
-        port: 'buscaProjetos',
+        port: 'verificaPapelSolicitante',
+        aNomeUsuario,
       },
     });
   }
@@ -54,26 +58,13 @@ export class InformacoesColaboradorService {
     });
   }
 
-  public buscaLancamentos(
-    body: BuscaLancamentos
-  ): Observable<RetornoLancamento> {
-    return this.http.post<RetornoLancamento>(environment.plugin.invoke, {
-      ...this.basePayload,
-      inputData: {
-        ...this.basePayload.inputData,
-        port: 'buscaLancamentos',
-        ...body,
-      },
-    });
-  }
-
   public gravarEnvio(body: Persistencia): Observable<RetornoGravacao> {
     return this.http.post<RetornoGravacao>(environment.plugin.invoke, {
       ...this.basePayload,
       inputData: {
         ...this.basePayload.inputData,
         ...body,
-        port: 'persisiteAgendamento',
+        port: 'persistirDatas',
       },
     });
   }

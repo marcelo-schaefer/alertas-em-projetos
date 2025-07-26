@@ -6,35 +6,25 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
-import { finalize, firstValueFrom, lastValueFrom } from 'rxjs';
-
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { CalendarModule } from 'primeng/calendar';
-
 import { InformacoesColaboradorService } from './services/informacoes-colaborador.service';
-import { Colaborador } from './services/models/colaborador.model';
-
 import { LoadingComponent } from '../../shared/components/loading/loading.component';
 import { FormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { RippleModule } from 'primeng/ripple';
 import { MessageService } from 'primeng/api';
-import { Apontamento } from './services/models/apontamento';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { DadosProjetoComponent } from './components/dados-projeto/dados-projeto.component';
-import { Projeto } from './services/models/projeto.model';
-import {
-  ColaboradoresPersistencia,
-  Persistencia,
-} from './services/models/persistencia';
-import { CorpoBusca } from './services/models/corpo-busca';
-import { ButtonModule } from 'primeng/button';
+import { Persistencia } from './services/models/persistencia';
+import { BuscaColaboradoresComponent } from './components/busca-colaboradores/busca-colaboradores.component';
+import { format } from 'date-fns';
 
 @Component({
   selector: 'app-historicos-colaborador',
   standalone: true,
   imports: [
     FormsModule,
-    DadosProjetoComponent,
+    BuscaColaboradoresComponent,
     LoadingComponent,
     CalendarModule,
     ToastModule,
@@ -46,17 +36,13 @@ import { ButtonModule } from 'primeng/button';
   styleUrl: './historicos-colaborador.component.css',
 })
 export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
-  @ViewChild(DadosProjetoComponent, { static: true })
-  dadosProjetoComponent: DadosProjetoComponent | undefined;
+  @ViewChild(BuscaColaboradoresComponent, { static: true })
+  buscaColaboradoresComponent: BuscaColaboradoresComponent | undefined;
 
   private informacoesColaboradorService = inject(InformacoesColaboradorService);
 
-  protected informacoesColaborador = signal<Colaborador | undefined>(undefined);
   carregandoInformacoes = signal(false);
-
-  listaProejtos!: Projeto[];
-  listaColaboradores!: Colaborador[];
-  projetoSelecionado!: Projeto;
+  papelAdm: string;
 
   constructor(private messageService: MessageService) {}
 
@@ -66,116 +52,49 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
   }
 
   async ngAfterViewInit(): Promise<void> {
-    await this.inicializarBuscaColaboradores();
-    await this.inicializarBuscaProjetos();
+    await this.buscaPapeisSolicitante();
+    this.inicializarBuscaColaboradores();
     this.carregandoInformacoes.set(false);
   }
 
   inicializaComponente(): void {
-    this.dadosProjetoComponent.limparFormulario();
+    this.buscaColaboradoresComponent.limparFormulario();
   }
 
-  async inicializarBuscaColaboradores(query?: string): Promise<void> {
-    this.dadosProjetoComponent.carregarTabela(true);
-    await this.buscaColaboradores(query);
-    this.tratarColaboradores();
-    this.dadosProjetoComponent.preencheListaColaboradores(
-      this.listaColaboradores
-    );
-    this.dadosProjetoComponent.carregarTabela(false);
+  async ibuscaPapelSolicitante(): Promise<void> {
+    if (!this.papelAdm) this.buscaColaboradoresComponent.opcoesIniciais();
   }
 
-  async inicializarBuscaProjetos(): Promise<void> {
-    await this.buscaProjetos();
-    this.tratarProjetos();
-    this.dadosProjetoComponent.preencheListaProejtos(this.listaProejtos);
+  async inicializarBuscaColaboradores(): Promise<void> {
+    this.buscaColaboradoresComponent.opcoesIniciais();
   }
 
-  async reinicializarComponente(): Promise<void> {
-    // window.location.reload();
-    this.carregandoInformacoes.set(true);
-    this.dadosProjetoComponent.limparFormulario();
-    await this.inicializarBuscaColaboradores();
-    await this.inicializarBuscaProjetos();
-    this.carregandoInformacoes.set(false);
-    this.desabilitarFormulario(false);
-  }
-
-  tratarColaboradores(): void {
-    if (this.listaColaboradores) {
-      if (!Array.isArray(this.listaColaboradores))
-        this.listaColaboradores = [this.listaColaboradores];
-
-      this.listaColaboradores.forEach((colaborador) => {
-        if (colaborador.projetos && !Array.isArray(colaborador.projetos))
-          colaborador.projetos = [colaborador.projetos];
-      });
-    }
-  }
-
-  tratarProjetos(): void {
-    if (this.listaProejtos) {
-      if (!Array.isArray(this.listaProejtos))
-        this.listaProejtos = [this.listaProejtos];
-
-      this.listaProejtos = this.ordenarProjetosPorNome(this.listaProejtos);
-    }
-  }
-
-  ordenarProjetosPorNome(projetos: Projeto[]): Projeto[] {
-    return projetos.sort((a, b) => {
-      if (a.ANome.toLowerCase() < b.ANome.toLowerCase()) {
-        return -1;
-      }
-      if (a.ANome.toLowerCase() > b.ANome.toLowerCase()) {
-        return 1;
-      }
-      return 0;
-    });
-  }
-
-  async buscaProjetos(): Promise<void> {
+  async buscaPapeisSolicitante(): Promise<void> {
     try {
       const projetos = await firstValueFrom(
-        this.informacoesColaboradorService.obterListaProjetos()
+        this.informacoesColaboradorService.obterPapelSolicitante(
+          'senior.murilo'
+        )
       );
       if (projetos.outputData.message) {
         this.notificarErro(
-          'Erro ao buscar a lista de projetos, ' + projetos.outputData.message
+          'Erro ao identificar o papel solicitante, ' +
+            projetos.outputData.message
         );
-      } else this.listaProejtos = projetos.outputData.projetos;
+        this.papelAdm = 'N';
+      } else {
+        this.papelAdm = projetos.outputData.APapelAdmAgendaEquipe || 'N';
+        this.buscaColaboradoresComponent.preenchePapelSolicitante(
+          this.papelAdm
+        );
+      }
     } catch (error) {
       console.error(error);
       this.notificarErro(
         'Erro ao buscar a lista de projetos, tente mais tarde ou contate o admnistrador. ' +
           error
       );
-      this.carregandoInformacoes.set(false);
-    }
-  }
-
-  async buscaColaboradores(query?: string): Promise<void> {
-    try {
-      const body: CorpoBusca = {
-        nTop: 10,
-        nSkip: 0,
-        aQuery: query,
-      };
-      const projetos = await firstValueFrom(
-        this.informacoesColaboradorService.obterListaColaboradores(body)
-      );
-      if (projetos.outputData.message) {
-        this.notificarErro(
-          'Erro ao buscar a lista de colaboradores, ' +
-            projetos.outputData.message
-        );
-      } else this.listaColaboradores = projetos.outputData.colaboradores;
-    } catch (error) {
-      console.error(error);
-      this.notificarErro(
-        'Erro ao buscar a lista de colaboradores, tente mais tarde ou contate o admnistrador. ' +
-          error
-      );
+      this.papelAdm = 'N';
       this.carregandoInformacoes.set(false);
     }
   }
@@ -204,7 +123,7 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
   }
 
   desabilitarFormulario(desabilitar: boolean): void {
-    this.dadosProjetoComponent.desabilitarFormulario(desabilitar);
+    this.buscaColaboradoresComponent.desabilitarFormulario(desabilitar);
   }
 
   async gravarEnvio(): Promise<void> {
@@ -214,19 +133,21 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
       (data) => {
         if (data.outputData.message || data.outputData.ARetorno != 'OK') {
           this.notificarErro(
-            'Erro ao gravar os agendamentos dos colaboradores, ' +
+            'Erro ao gravar a data retroativa, ' +
               (data.outputData?.message || data.outputData?.ARetorno)
           );
           this.carregandoInformacoes.set(false);
           this.desabilitarFormulario(false);
         } else {
           this.notificarSucesso('Gravado com sucesso!');
-          this.reinicializarComponente();
+          this.inicializaComponente();
+          this.carregandoInformacoes.set(false);
+          this.desabilitarFormulario(false);
         }
       },
       () => {
         this.notificarErro(
-          'Erro ao gravar os agendamentos dos colaboradores, tente mais tarde ou contate o administrador'
+          'Erro ao gravar a data retroativa, tente mais tarde ou contate o administrador'
         );
         this.carregandoInformacoes.set(false);
         this.desabilitarFormulario(false);
@@ -234,41 +155,20 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
     );
   }
 
-  validaEdicaoLancamento(data: string | Date): boolean {
-    const dataHoje = new Date();
-    dataHoje.setHours(0, 0, 0, 0);
-    return typeof data === 'string'
-      ? this.stringParaDate(data) >= dataHoje
-      : data >= dataHoje;
-  }
-
-  stringParaDate(dataStr: string): Date {
-    const [dia, mes, ano] = dataStr.split('/').map(Number);
-    return new Date(ano, mes - 1, dia);
+  formatarData(data: Date): string {
+    return format(data, 'dd/MM/yyyy');
   }
 
   montaCorpoEnvio(): Persistencia {
-    const persistencia: Persistencia = {
-      colaboradores: [],
-    };
-
-    this.dadosProjetoComponent.listaColaboradores.forEach((colaborador) => {
-      if (colaborador.lancamentos)
-        colaborador.lancamentos.forEach((lancamento) => {
-          if (this.validaEdicaoLancamento(lancamento.DData))
-            persistencia.colaboradores.push({
-              nEmpresa: Number(colaborador.NEmpresa),
-              nTipoColaborador: Number(colaborador.NTipoColaborador),
-              nMatricula: Number(colaborador.NMatricula),
-              nCodigoProjeto: Number(colaborador.projetoSelecionado.NId),
-
-              aFullTime:
-                colaborador.tipoAlocacaoSelecionado == 'Full-Time' ? 'S' : 'N',
-              dData: lancamento.DData,
-              aTipoLAncamento: lancamento.ATipoLancamento,
-            } as ColaboradoresPersistencia);
-        });
-    });
-    return persistencia;
+    return {
+      nEmpresa: Number(this.buscaColaboradoresComponent.colaborador?.NEmpresa),
+      nTipoColaborador: Number(
+        this.buscaColaboradoresComponent.colaborador?.NTipoColaborador
+      ),
+      nMatricula: Number(
+        this.buscaColaboradoresComponent.colaborador?.NMatricula
+      ),
+      dData: this.formatarData(this.buscaColaboradoresComponent.dataRetrotiva),
+    } as Persistencia;
   }
 }

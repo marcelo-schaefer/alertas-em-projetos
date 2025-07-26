@@ -1,0 +1,62 @@
+<p-card>
+  <p-toast />
+  <ng-template pTemplate="title">
+    <h2>Apontamento Retroativo</h2>
+  </ng-template>
+
+  <div class="mb-4">
+    <label for="colaboradorInput" class="block font-semibold mb-2"
+      >Buscar Colaborador</label
+    >
+
+    <p-dropdown
+      [options]="colaboradores || []"
+      [style]="{ width: '500px' }"
+      formControlName="colaboradorSelecionado"
+      placeholder="Selecione um Colaborador"
+      [emptyMessage]="'Nenhum colaborador disponível'"
+      [editable]="true"
+      (ngModelChange)="onSearch($event)"
+      (onChange)="selecionaColaborador($event)"
+      (onScrollToBottom)="onScrollToBottom()"
+      [loading]="isLoadingColaboradores"
+      [virtualScroll]="true"
+      [virtualScrollItemSize]="30"
+      optionLabel="ANome"
+      [disabled]="desabilitar"
+      [panelStyle]="{ 'max-height': '200px' }"
+    >
+      <ng-template pTemplate="item" let-colaboradorItem>
+        <div>
+          {{ colaboradorItem?.NMatricula + " - " + colaboradorItem?.ANome }}
+        </div>
+      </ng-template></p-dropdown
+    >
+  </div>
+
+  <div class="mb-4">
+    <label for="colaboradorInput" class="block font-semibold mb-2"
+      >Data Retroativa</label
+    >
+    <p-calendar
+      dateFormat="dd/mm/yy"
+      [(ngModel)]="dataRetrotiva"
+      [maxDate]="maxDate"
+      appendTo="body"
+      placeholder="Selecione uma Data"
+      [disabled]="desabilitar"
+    />
+  </div>
+
+  <br />
+  <div class="col-12 flex flex-column align-items-end">
+    <button
+      pButton
+      pRipple
+      (click)="enviar()"
+      label="Gravar"
+      [disabled]="desabilitar"
+      class="p-button-success"
+    ></button>
+  </div>
+</p-card>
