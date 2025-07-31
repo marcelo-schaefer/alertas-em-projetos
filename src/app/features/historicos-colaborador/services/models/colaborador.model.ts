@@ -7,7 +7,7 @@ export interface Colaborador {
 
 export class RetornoColaborador {
   outputData: {
-    colaboradores: Colaborador[];
+    colaboradores?: Colaborador[];
     ARetorno?: string;
     message?: string;
   };

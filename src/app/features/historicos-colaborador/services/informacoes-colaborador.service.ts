@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, Observable, of } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import {
@@ -36,37 +36,71 @@ export class InformacoesColaboradorService {
 
   public obterPapelSolicitante(): Observable<RetornoPapelColaborador> {
     const aNomeUsuario = this.tokenService.username;
-    return this.http.post<RetornoPapelColaborador>(environment.plugin.invoke, {
-      ...this.basePayload,
-      inputData: {
-        ...this.basePayload.inputData,
-        port: 'verificaPapelSolicitante',
-        aNomeUsuario,
-      },
-    });
+    return this.http
+      .post<RetornoPapelColaborador>(environment.plugin.invoke, {
+        ...this.basePayload,
+        inputData: {
+          ...this.basePayload.inputData,
+          port: 'verificaPapelSolicitante',
+          aNomeUsuario,
+        },
+      })
+      .pipe(
+        catchError((error) => {
+          return of({
+            outputData: {
+              APapelAdmAgendaEquipe: 'N',
+              ARetorno: error.message || error.toString(),
+              message: error.message || error.toString(),
+            },
+          });
+        })
+      );
   }
 
   public obterListaColaboradores(
     body: CorpoBusca
   ): Observable<RetornoColaborador> {
-    return this.http.post<RetornoColaborador>(environment.plugin.invoke, {
-      ...this.basePayload,
-      inputData: {
-        ...this.basePayload.inputData,
-        port: 'buscaColaboradores',
-        ...body,
-      },
-    });
+    return this.http
+      .post<RetornoColaborador>(environment.plugin.invoke, {
+        ...this.basePayload,
+        inputData: {
+          ...this.basePayload.inputData,
+          port: 'buscaColaboradores',
+          ...body,
+        },
+      })
+      .pipe(
+        catchError((error) => {
+          return of({
+            outputData: {
+              ARetorno: error.message || error.toString(),
+              message: error.message || error.toString(),
+            },
+          });
+        })
+      );
   }
 
   public gravarEnvio(body: Persistencia): Observable<RetornoGravacao> {
-    return this.http.post<RetornoGravacao>(environment.plugin.invoke, {
-      ...this.basePayload,
-      inputData: {
-        ...this.basePayload.inputData,
-        ...body,
-        port: 'persistirDatas',
-      },
-    });
+    return this.http
+      .post<RetornoGravacao>(environment.plugin.invoke, {
+        ...this.basePayload,
+        inputData: {
+          ...this.basePayload.inputData,
+          ...body,
+          port: 'persistirDatas',
+        },
+      })
+      .pipe(
+        catchError((error) => {
+          return of({
+            outputData: {
+              ARetorno: error.message || error.toString(),
+              message: error.message || error.toString(),
+            },
+          });
+        })
+      );
   }
 }

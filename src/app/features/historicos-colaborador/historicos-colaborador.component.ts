@@ -89,7 +89,7 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
     } catch (error) {
       console.error(error);
       this.notificarErro(
-        'Erro ao buscar a lista de projetos, tente mais tarde ou contate o admnistrador. ' +
+        'Erro ao buscar os papeis do solicitante, tente mais tarde ou contate o admnistrador. ' +
           error
       );
       this.papelAdm = 'N';
@@ -108,7 +108,7 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
   notificarSucesso(mensagem: string) {
     this.messageService.add({
       severity: 'success',
-      summary: 'Erro',
+      summary: 'Sucesso',
       detail: mensagem,
       life: 10000,
     });
