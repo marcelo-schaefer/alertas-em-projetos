@@ -179,8 +179,8 @@ export class BuscaColaboradoresComponent implements OnInit {
     return of(new RetornoColaborador());
   }
 
-  onSearch(search: string): void {
-    this.searchChange$.next(search);
+  onSearch(event: any): void {
+    this.searchChange$.next(event.target.value);
   }
 
   onScrollToBottom(): void {

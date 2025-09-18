@@ -16,7 +16,7 @@
       placeholder="Selecione um Colaborador"
       [emptyMessage]="'Nenhum colaborador disponível'"
       [editable]="true"
-      (ngModelChange)="onSearch($event)"
+      (input)="onSearch($event)"
       (onChange)="selecionaColaborador($event)"
       (onScrollToBottom)="onScrollToBottom()"
       [loading]="isLoadingColaboradores"
