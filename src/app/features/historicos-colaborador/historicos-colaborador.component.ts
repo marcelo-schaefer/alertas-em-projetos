@@ -53,20 +53,11 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
 
   async ngAfterViewInit(): Promise<void> {
     await this.buscaPapeisSolicitante();
-    this.inicializarBuscaColaboradores();
     this.carregandoInformacoes.set(false);
   }
 
   inicializaComponente(): void {
     this.buscaColaboradoresComponent.limparFormulario();
-  }
-
-  async ibuscaPapelSolicitante(): Promise<void> {
-    if (!this.papelAdm) this.buscaColaboradoresComponent.opcoesIniciais();
-  }
-
-  async inicializarBuscaColaboradores(): Promise<void> {
-    this.buscaColaboradoresComponent.opcoesIniciais();
   }
 
   async buscaPapeisSolicitante(): Promise<void> {
@@ -82,9 +73,6 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
         this.papelAdm = 'N';
       } else {
         this.papelAdm = projetos.outputData.APapelAdmAgendaEquipe || 'N';
-        this.buscaColaboradoresComponent.preenchePapelSolicitante(
-          this.papelAdm
-        );
       }
     } catch (error) {
       console.error(error);
@@ -158,15 +146,6 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
   }
 
   montaCorpoEnvio(): Persistencia {
-    return {
-      nEmpresa: Number(this.buscaColaboradoresComponent.colaborador?.NEmpresa),
-      nTipoColaborador: Number(
-        this.buscaColaboradoresComponent.colaborador?.NTipoColaborador
-      ),
-      nMatricula: Number(
-        this.buscaColaboradoresComponent.colaborador?.NMatricula
-      ),
-      dData: this.formatarData(this.buscaColaboradoresComponent.dataRetrotiva),
-    } as Persistencia;
+    return {} as Persistencia;
   }
 }

@@ -1,52 +1,124 @@
 <p-card>
   <p-toast />
   <ng-template pTemplate="title">
-    <h2>Apontamento Retroativo</h2>
+    <h2>Definições de alertas em projetos</h2>
   </ng-template>
 
-  <div class="mb-4">
-    <label for="colaboradorInput" class="block font-semibold mb-2"
-      >Buscar Colaborador</label
-    >
+  <p-card class="custom-card" header="1º Porcentagem">
+    <div class="p-grid">
+      <div class="p-col-12 p-md-6">
+        <div class="mb-4">
+          <label for="colaboradorInput" class="block font-semibold mb-2">
+            Definição Porcentagem
+          </label>
 
-    <p-dropdown
-      [options]="colaboradores || []"
-      [style]="{ width: '500px' }"
-      formControlName="colaboradorSelecionado"
-      placeholder="Selecione um Colaborador"
-      [emptyMessage]="'Nenhum colaborador disponível'"
-      [editable]="true"
-      (input)="onSearch($event)"
-      (onChange)="selecionaColaborador($event)"
-      (onScrollToBottom)="onScrollToBottom()"
-      [loading]="isLoadingColaboradores"
-      [virtualScroll]="true"
-      [virtualScrollItemSize]="30"
-      optionLabel="ANome"
-      [disabled]="desabilitar"
-      [panelStyle]="{ 'max-height': '200px' }"
-    >
-      <ng-template pTemplate="item" let-colaboradorItem>
-        <div>
-          {{ colaboradorItem?.NMatricula + " - " + colaboradorItem?.ANome }}
+          <p-inputNumber
+            [(ngModel)]="valorPorcentagem1"
+            mode="decimal"
+            inputId="withoutgrouping"
+            [useGrouping]="false"
+            suffix="%"
+            max="100"
+            [disabled]="desabilitar"
+          ></p-inputNumber>
         </div>
-      </ng-template></p-dropdown
-    >
-  </div>
+      </div>
 
-  <div class="mb-4">
-    <label for="colaboradorInput" class="block font-semibold mb-2"
-      >Data Retroativa</label
-    >
-    <p-calendar
-      dateFormat="dd/mm/yy"
-      [(ngModel)]="dataRetrotiva"
-      [maxDate]="maxDate"
-      appendTo="body"
-      placeholder="Selecione uma Data"
-      [disabled]="desabilitar"
-    />
-  </div>
+      <div class="p-col-12 p-md-6">
+        <div class="mb-4">
+          <label for="colaboradorInput" class="block font-semibold mb-2">
+            Descrição do E-mail
+          </label>
+
+          <textarea
+            rows="3"
+            cols="30"
+            pInputTextarea
+            [(ngModel)]="textoPorcentagem1"
+            class="custom-textarea"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </p-card>
+
+  <br />
+  <p-card class="custom-card" header="2º Porcentagem">
+    <div class="p-grid">
+      <div class="p-col-12 p-md-6">
+        <div class="mb-4">
+          <label for="colaboradorInput" class="block font-semibold mb-2">
+            Definição Porcentagem
+          </label>
+
+          <p-inputNumber
+            [(ngModel)]="valorPorcentagem2"
+            mode="decimal"
+            inputId="withoutgrouping"
+            [useGrouping]="false"
+            suffix="%"
+            max="100"
+            [disabled]="desabilitar"
+          ></p-inputNumber>
+        </div>
+      </div>
+
+      <div class="p-col-12 p-md-6">
+        <div class="mb-4">
+          <label for="colaboradorInput" class="block font-semibold mb-2">
+            Descrição do E-mail
+          </label>
+
+          <textarea
+            rows="3"
+            cols="30"
+            pInputTextarea
+            [(ngModel)]="textoPorcentagem2"
+            class="custom-textarea"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </p-card>
+
+  <br />
+  <p-card class="custom-card" header="3º Porcentagem">
+    <div class="p-grid">
+      <div class="p-col-12 p-md-6">
+        <div class="mb-4">
+          <label for="colaboradorInput" class="block font-semibold mb-2">
+            Definição Porcentagem
+          </label>
+
+          <p-inputNumber
+            [(ngModel)]="valorPorcentagem3"
+            mode="decimal"
+            inputId="withoutgrouping"
+            [useGrouping]="false"
+            suffix="%"
+            max="100"
+            [disabled]="desabilitar"
+          ></p-inputNumber>
+        </div>
+      </div>
+
+      <div class="p-col-12 p-md-6">
+        <div class="mb-4">
+          <label for="colaboradorInput" class="block font-semibold mb-2">
+            Descrição do E-mail
+          </label>
+
+          <textarea
+            rows="3"
+            cols="30"
+            pInputTextarea
+            [(ngModel)]="textoPorcentagem3"
+            class="custom-textarea"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </p-card>
 
   <br />
   <div class="col-12 flex flex-column align-items-end">
