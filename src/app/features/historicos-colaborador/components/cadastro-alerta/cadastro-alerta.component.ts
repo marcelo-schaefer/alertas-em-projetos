@@ -19,9 +19,9 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { Alerta } from '../../services/models/alerta';
 
 @Component({
-  selector: 'app-busca-colaboradores',
-  templateUrl: './busca-colaboradores.component.html',
-  styleUrls: ['./busca-colaboradores.component.css'],
+  selector: 'app-cadastro-alerta',
+  templateUrl: './cadastro-alerta.component.html',
+  styleUrls: ['./cadastro-alerta.component.css'],
   standalone: true,
   imports: [
     CardModule,
@@ -41,7 +41,7 @@ import { Alerta } from '../../services/models/alerta';
     InputTextareaModule,
   ],
 })
-export class BuscaColaboradoresComponent {
+export class CadastroAlertaComponent {
   @Output()
   enviarSolicitacao: EventEmitter<boolean> = new EventEmitter<boolean>();
 

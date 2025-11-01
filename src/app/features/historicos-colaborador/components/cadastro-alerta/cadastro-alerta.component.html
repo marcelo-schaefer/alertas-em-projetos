@@ -70,7 +70,7 @@
       pRipple
       (click)="adicionaLinha()"
       label="Adicionar Alerta"
-      [disabled]="desabilitar"
+      [disabled]="desabilitar || listaAlertas.length <= 1"
     ></button>
 
     <button
@@ -78,7 +78,7 @@
       pRipple
       (click)="enviar()"
       label="Gravar"
-      [disabled]="desabilitar"
+      [disabled]="desabilitar || listaAlertas.length <= 1"
       class="p-button-success"
     ></button>
   </div>

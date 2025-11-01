@@ -16,16 +16,16 @@ import { RippleModule } from 'primeng/ripple';
 import { MessageService } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { Persistencia } from './services/models/persistencia';
-import { BuscaColaboradoresComponent } from './components/busca-colaboradores/busca-colaboradores.component';
 import { format } from 'date-fns';
 import { Alerta } from './services/models/alerta';
+import { CadastroAlertaComponent } from './components/cadastro-alerta/cadastro-alerta.component';
 
 @Component({
   selector: 'app-historicos-colaborador',
   standalone: true,
   imports: [
     FormsModule,
-    BuscaColaboradoresComponent,
+    CadastroAlertaComponent,
     LoadingComponent,
     CalendarModule,
     ToastModule,
@@ -37,8 +37,8 @@ import { Alerta } from './services/models/alerta';
   styleUrl: './historicos-colaborador.component.css',
 })
 export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
-  @ViewChild(BuscaColaboradoresComponent, { static: true })
-  buscaColaboradoresComponent: BuscaColaboradoresComponent | undefined;
+  @ViewChild(CadastroAlertaComponent, { static: true })
+  cadastroAlertaComponent: CadastroAlertaComponent | undefined;
 
   private informacoesColaboradorService = inject(InformacoesColaboradorService);
 
@@ -59,11 +59,11 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
   }
 
   inicializaComponente(): void {
-    this.buscaColaboradoresComponent.limparFormulario();
+    this.cadastroAlertaComponent.limparFormulario();
   }
 
   preencherDadosAlertaCadastrado(): void {
-    this.buscaColaboradoresComponent.preencherDadosAlertaCadastrado(
+    this.cadastroAlertaComponent.preencherDadosAlertaCadastrado(
       this.listaAlertas
     );
   }
@@ -78,9 +78,6 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
           'Erro ao buscar os alertas já cadastrados, ' +
             projetos.outputData.message
         );
-        this.listaAlertas = projetos.outputData.alertas || [
-          this.montaAlertaVazio(),
-        ];
       } else {
         this.listaAlertas = projetos.outputData.alertas || [
           this.montaAlertaVazio(),
@@ -127,7 +124,7 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
   }
 
   desabilitarFormulario(desabilitar: boolean): void {
-    this.buscaColaboradoresComponent.desabilitarFormulario(desabilitar);
+    this.cadastroAlertaComponent.desabilitarFormulario(desabilitar);
   }
 
   async gravarEnvio(): Promise<void> {
@@ -164,6 +161,6 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
   }
 
   montaCorpoEnvio(): Alerta[] {
-    return this.buscaColaboradoresComponent.montaCorpoEnvio();
+    return this.cadastroAlertaComponent.montaCorpoEnvio();
   }
 }
