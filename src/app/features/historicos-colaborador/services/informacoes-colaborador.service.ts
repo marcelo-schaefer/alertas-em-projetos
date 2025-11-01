@@ -12,6 +12,7 @@ import { RetornoGravacao } from './models/retorno-gravacao';
 import { Persistencia } from './models/persistencia';
 import { CorpoBusca } from './models/corpo-busca';
 import { TokenService } from '../../../core/services/token.service';
+import { Alerta, RetornoAlerta } from './models/alerta';
 
 @Injectable({
   providedIn: 'root',
@@ -34,69 +35,42 @@ export class InformacoesColaboradorService {
   private http = inject(HttpClient);
   private tokenService = inject(TokenService);
 
-  public obterPapelSolicitante(): Observable<RetornoPapelColaborador> {
-    const aNomeUsuario = this.tokenService.username;
+  public obterAlertaCadastrado(): Observable<RetornoAlerta> {
     return this.http
-      .post<RetornoPapelColaborador>(environment.plugin.invoke, {
+      .post<RetornoAlerta>(environment.plugin.invoke, {
         ...this.basePayload,
         inputData: {
           ...this.basePayload.inputData,
-          port: 'verificaPapelSolicitante',
-          aNomeUsuario,
+          port: 'buscaAlerta',
         },
       })
       .pipe(
         catchError((error) => {
           return of({
             outputData: {
-              APapelAdmAgendaEquipe: 'N',
-              ARetorno: error.message || error.toString(),
               message: error.message || error.toString(),
+              alertas: [{ porcentagem: 0, mensagem: '' }],
             },
           });
         })
       );
   }
 
-  public obterListaColaboradores(
-    body: CorpoBusca
-  ): Observable<RetornoColaborador> {
-    return this.http
-      .post<RetornoColaborador>(environment.plugin.invoke, {
-        ...this.basePayload,
-        inputData: {
-          ...this.basePayload.inputData,
-          port: 'buscaColaboradores',
-          ...body,
-        },
-      })
-      .pipe(
-        catchError((error) => {
-          return of({
-            outputData: {
-              ARetorno: error.message || error.toString(),
-              message: error.message || error.toString(),
-            },
-          });
-        })
-      );
-  }
-
-  public gravarEnvio(body: Persistencia): Observable<RetornoGravacao> {
+  public gravarEnvio(body: Alerta[]): Observable<RetornoGravacao> {
     return this.http
       .post<RetornoGravacao>(environment.plugin.invoke, {
         ...this.basePayload,
         inputData: {
           ...this.basePayload.inputData,
-          ...body,
-          port: 'persistirDatas',
+          alertas: body,
+          port: 'persistirAlertas',
         },
       })
       .pipe(
         catchError((error) => {
           return of({
             outputData: {
-              ARetorno: error.message || error.toString(),
+              retorno: error.message || error.toString(),
               message: error.message || error.toString(),
             },
           });

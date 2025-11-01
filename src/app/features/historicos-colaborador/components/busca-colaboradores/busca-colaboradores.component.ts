@@ -16,6 +16,7 @@ import { CommonModule } from '@angular/common';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { MessageService } from 'primeng/api';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { Alerta } from '../../services/models/alerta';
 
 @Component({
   selector: 'app-busca-colaboradores',
@@ -40,23 +41,24 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
     InputTextareaModule,
   ],
 })
-export class BuscaColaboradoresComponent implements OnInit {
+export class BuscaColaboradoresComponent {
   @Output()
   enviarSolicitacao: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(private messageService: MessageService) {}
 
-  desabilitar = false;
-  valorPorcentagem1 = 0;
-  textoPorcentagem1 = '';
-  valorPorcentagem2 = 0;
-  textoPorcentagem2 = '';
-  valorPorcentagem3 = 0;
-  textoPorcentagem3 = '';
+  desabilitar = true;
 
   formDadosSolicitacao: FormGroup;
+  listaAlertas: Alerta[] = [];
 
-  ngOnInit(): void {}
+  preencherDadosAlertaCadastrado(alertas: Alerta[]): void {
+    if (alertas) {
+      this.listaAlertas = alertas;
+
+      this.desabilitarFormulario(false);
+    }
+  }
 
   desabilitarFormulario(desabilitar: boolean): void {
     this.desabilitar = desabilitar;
@@ -64,7 +66,7 @@ export class BuscaColaboradoresComponent implements OnInit {
 
   limparFormulario(): void {
     this.desabilitar = false;
-    this.valorPorcentagem1 = 0;
+    this.listaAlertas = [];
   }
 
   notificarErro(mensagem: string) {
@@ -77,11 +79,39 @@ export class BuscaColaboradoresComponent implements OnInit {
   }
 
   validarEnvio(): boolean {
-    if (!this.valorPorcentagem1) this.notificarErro('Selecione um colaborador');
-    return !!this.valorPorcentagem1;
+    if (this.verificarPorcentagensDuplicadas())
+      this.notificarErro(
+        'Existem porcentagens duplicadas nos alertas cadastrados. Por favor, verifique.'
+      );
+    return !this.verificarPorcentagensDuplicadas();
+  }
+
+  verificarPorcentagensDuplicadas(): boolean {
+    const porcentagens = this.listaAlertas.map((a) => a.porcentagem);
+    const setPorcentagens = new Set(porcentagens);
+    return setPorcentagens.size !== porcentagens.length;
   }
 
   enviar(): void {
     if (this.validarEnvio()) this.enviarSolicitacao.emit(true);
+  }
+
+  excluirLinha(index: number): void {
+    this.listaAlertas.splice(index, 1);
+  }
+
+  adicionaLinha(): void {
+    this.listaAlertas.push(this.montaAlertaVazio());
+  }
+
+  montaAlertaVazio(): Alerta {
+    return {
+      porcentagem: 0,
+      mensagem: '',
+    };
+  }
+
+  montaCorpoEnvio(): Alerta[] {
+    return this.listaAlertas;
   }
 }

@@ -4,124 +4,75 @@
     <h2>Definições de alertas em projetos</h2>
   </ng-template>
 
-  <p-card class="custom-card" header="1º Porcentagem">
-    <div class="p-grid">
-      <div class="p-col-12 p-md-6">
-        <div class="mb-4">
-          <label for="colaboradorInput" class="block font-semibold mb-2">
-            Definição Porcentagem
-          </label>
+  <div *ngFor="let alerta of listaAlertas; let i = index">
+    <p-card class="custom-card" header="{{ i + 1 }}º Porcentagem">
+      <div class="p-grid">
+        <div class="p-col-12 p-md-6">
+          <div class="mb-4">
+            <label
+              for="porcentagemInput{{ i }}"
+              class="block font-semibold mb-2"
+            >
+              Definição Porcentagem
+            </label>
 
-          <p-inputNumber
-            [(ngModel)]="valorPorcentagem1"
-            mode="decimal"
-            inputId="withoutgrouping"
-            [useGrouping]="false"
-            suffix="%"
-            max="100"
-            [disabled]="desabilitar"
-          ></p-inputNumber>
+            <p-inputNumber
+              [(ngModel)]="alerta.porcentagem"
+              mode="decimal"
+              inputId="porcentagemInput{{ i }}"
+              [useGrouping]="false"
+              suffix="%"
+              max="100"
+              [disabled]="desabilitar"
+            ></p-inputNumber>
+          </div>
+        </div>
+
+        <div class="p-col-12 p-md-6">
+          <div class="mb-4">
+            <label for="mensagemInput{{ i }}" class="block font-semibold mb-2">
+              Descrição do E-mail
+            </label>
+
+            <textarea
+              id="mensagemInput{{ i }}"
+              rows="3"
+              cols="30"
+              pInputTextarea
+              [(ngModel)]="alerta.mensagem"
+              class="custom-textarea"
+            ></textarea>
+          </div>
         </div>
       </div>
 
-      <div class="p-col-12 p-md-6">
-        <div class="mb-4">
-          <label for="colaboradorInput" class="block font-semibold mb-2">
-            Descrição do E-mail
-          </label>
-
-          <textarea
-            rows="3"
-            cols="30"
-            pInputTextarea
-            [(ngModel)]="textoPorcentagem1"
-            class="custom-textarea"
-          ></textarea>
-        </div>
+      <br />
+      <div class="botao-excluir">
+        <button
+          pButton
+          pRipple
+          (click)="excluirLinha(i)"
+          [text]="true"
+          [plain]="true"
+          label="Excluir"
+          [disabled]="desabilitar || listaAlertas.length <= 1"
+          severity="danger"
+          icon="pi pi-trash"
+        ></button>
       </div>
-    </div>
-  </p-card>
+    </p-card>
+  </div>
 
   <br />
-  <p-card class="custom-card" header="2º Porcentagem">
-    <div class="p-grid">
-      <div class="p-col-12 p-md-6">
-        <div class="mb-4">
-          <label for="colaboradorInput" class="block font-semibold mb-2">
-            Definição Porcentagem
-          </label>
+  <div class="col-12 flex justify-content-end gap-2 mt-3">
+    <button
+      pButton
+      pRipple
+      (click)="adicionaLinha()"
+      label="Adicionar Alerta"
+      [disabled]="desabilitar"
+    ></button>
 
-          <p-inputNumber
-            [(ngModel)]="valorPorcentagem2"
-            mode="decimal"
-            inputId="withoutgrouping"
-            [useGrouping]="false"
-            suffix="%"
-            max="100"
-            [disabled]="desabilitar"
-          ></p-inputNumber>
-        </div>
-      </div>
-
-      <div class="p-col-12 p-md-6">
-        <div class="mb-4">
-          <label for="colaboradorInput" class="block font-semibold mb-2">
-            Descrição do E-mail
-          </label>
-
-          <textarea
-            rows="3"
-            cols="30"
-            pInputTextarea
-            [(ngModel)]="textoPorcentagem2"
-            class="custom-textarea"
-          ></textarea>
-        </div>
-      </div>
-    </div>
-  </p-card>
-
-  <br />
-  <p-card class="custom-card" header="3º Porcentagem">
-    <div class="p-grid">
-      <div class="p-col-12 p-md-6">
-        <div class="mb-4">
-          <label for="colaboradorInput" class="block font-semibold mb-2">
-            Definição Porcentagem
-          </label>
-
-          <p-inputNumber
-            [(ngModel)]="valorPorcentagem3"
-            mode="decimal"
-            inputId="withoutgrouping"
-            [useGrouping]="false"
-            suffix="%"
-            max="100"
-            [disabled]="desabilitar"
-          ></p-inputNumber>
-        </div>
-      </div>
-
-      <div class="p-col-12 p-md-6">
-        <div class="mb-4">
-          <label for="colaboradorInput" class="block font-semibold mb-2">
-            Descrição do E-mail
-          </label>
-
-          <textarea
-            rows="3"
-            cols="30"
-            pInputTextarea
-            [(ngModel)]="textoPorcentagem3"
-            class="custom-textarea"
-          ></textarea>
-        </div>
-      </div>
-    </div>
-  </p-card>
-
-  <br />
-  <div class="col-12 flex flex-column align-items-end">
     <button
       pButton
       pRipple

@@ -18,6 +18,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { Persistencia } from './services/models/persistencia';
 import { BuscaColaboradoresComponent } from './components/busca-colaboradores/busca-colaboradores.component';
 import { format } from 'date-fns';
+import { Alerta } from './services/models/alerta';
 
 @Component({
   selector: 'app-historicos-colaborador',
@@ -42,7 +43,7 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
   private informacoesColaboradorService = inject(InformacoesColaboradorService);
 
   carregandoInformacoes = signal(false);
-  papelAdm: string;
+  listaAlertas: Alerta[] = [];
 
   constructor(private messageService: MessageService) {}
 
@@ -52,7 +53,8 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
   }
 
   async ngAfterViewInit(): Promise<void> {
-    await this.buscaPapeisSolicitante();
+    await this.buscaAletraCadastrado();
+    this.preencherDadosAlertaCadastrado();
     this.carregandoInformacoes.set(false);
   }
 
@@ -60,27 +62,36 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
     this.buscaColaboradoresComponent.limparFormulario();
   }
 
-  async buscaPapeisSolicitante(): Promise<void> {
+  preencherDadosAlertaCadastrado(): void {
+    this.buscaColaboradoresComponent.preencherDadosAlertaCadastrado(
+      this.listaAlertas
+    );
+  }
+
+  async buscaAletraCadastrado(): Promise<void> {
     try {
       const projetos = await firstValueFrom(
-        this.informacoesColaboradorService.obterPapelSolicitante()
+        this.informacoesColaboradorService.obterAlertaCadastrado()
       );
       if (projetos.outputData.message) {
         this.notificarErro(
-          'Erro ao identificar o papel solicitante, ' +
+          'Erro ao buscar os alertas já cadastrados, ' +
             projetos.outputData.message
         );
-        this.papelAdm = 'N';
+        this.listaAlertas = projetos.outputData.alertas || [
+          this.montaAlertaVazio(),
+        ];
       } else {
-        this.papelAdm = projetos.outputData.APapelAdmAgendaEquipe || 'N';
+        this.listaAlertas = projetos.outputData.alertas || [
+          this.montaAlertaVazio(),
+        ];
       }
     } catch (error) {
       console.error(error);
       this.notificarErro(
-        'Erro ao buscar os papeis do solicitante, tente mais tarde ou contate o admnistrador. ' +
+        'Erro ao buscar os alertas já cadastrados, tente mais tarde ou contate o admnistrador. ' +
           error
       );
-      this.papelAdm = 'N';
       this.carregandoInformacoes.set(false);
     }
   }
@@ -102,6 +113,13 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
     });
   }
 
+  montaAlertaVazio(): Alerta {
+    return {
+      porcentagem: 0,
+      mensagem: '',
+    };
+  }
+
   async enviarSolicitacao(): Promise<void> {
     this.desabilitarFormulario(true);
     this.carregandoInformacoes.set(true);
@@ -117,10 +135,10 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
       this.informacoesColaboradorService.gravarEnvio(this.montaCorpoEnvio())
     ).then(
       (data) => {
-        if (data.outputData.message || data.outputData.ARetorno != 'OK') {
+        if (data.outputData.message || data.outputData.retorno != 'OK') {
           this.notificarErro(
             'Erro ao gravar a data retroativa, ' +
-              (data.outputData?.message || data.outputData?.ARetorno)
+              (data.outputData?.message || data.outputData?.retorno)
           );
           this.carregandoInformacoes.set(false);
           this.desabilitarFormulario(false);
@@ -145,7 +163,7 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
     return format(data, 'dd/MM/yyyy');
   }
 
-  montaCorpoEnvio(): Persistencia {
-    return {} as Persistencia;
+  montaCorpoEnvio(): Alerta[] {
+    return this.buscaColaboradoresComponent.montaCorpoEnvio();
   }
 }
