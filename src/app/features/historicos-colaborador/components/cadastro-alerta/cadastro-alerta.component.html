@@ -41,7 +41,13 @@
               pInputTextarea
               [(ngModel)]="alerta.mensagem"
               class="custom-textarea"
+              [disabled]="desabilitar"
+              maxlength="1000"
             ></textarea>
+
+            <div class="contador">
+              {{ alerta.mensagem?.length || 0 }} / 1000
+            </div>
           </div>
         </div>
       </div>
@@ -70,7 +76,7 @@
       pRipple
       (click)="adicionaLinha()"
       label="Adicionar Alerta"
-      [disabled]="desabilitar || listaAlertas.length <= 1"
+      [disabled]="desabilitar || listaAlertas.length < 1"
     ></button>
 
     <button
@@ -78,7 +84,7 @@
       pRipple
       (click)="enviar()"
       label="Gravar"
-      [disabled]="desabilitar || listaAlertas.length <= 1"
+      [disabled]="desabilitar || listaAlertas.length < 1"
       class="p-button-success"
     ></button>
   </div>

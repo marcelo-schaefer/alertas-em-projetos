@@ -24,7 +24,7 @@ export class InformacoesColaboradorService {
       encryption: '3',
       server: 'https://ocweb03s1p.seniorcloud.com.br:31061/',
       module: 'rubi',
-      service: 'com.senior.g5.rh.fp.apontamentoRetroativo',
+      service: 'com.senior.g5.rh.fp.alertaProjeto',
       port: '',
       user: '',
       password: '',

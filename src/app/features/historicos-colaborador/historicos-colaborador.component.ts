@@ -52,14 +52,12 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
     this.inicializaComponente();
   }
 
-  async ngAfterViewInit(): Promise<void> {
+  async inicializaComponente(): Promise<void> {
+    this.cadastroAlertaComponent.limparFormulario();
     await this.buscaAletraCadastrado();
     this.preencherDadosAlertaCadastrado();
     this.carregandoInformacoes.set(false);
-  }
-
-  inicializaComponente(): void {
-    this.cadastroAlertaComponent.limparFormulario();
+    this.desabilitarFormulario(false);
   }
 
   preencherDadosAlertaCadastrado(): void {
@@ -79,6 +77,8 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
             projetos.outputData.message
         );
       } else {
+        if (!Array.isArray(projetos.outputData.alertas))
+          projetos.outputData.alertas = [projetos.outputData.alertas];
         this.listaAlertas = projetos.outputData.alertas || [
           this.montaAlertaVazio(),
         ];
@@ -134,7 +134,7 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
       (data) => {
         if (data.outputData.message || data.outputData.retorno != 'OK') {
           this.notificarErro(
-            'Erro ao gravar a data retroativa, ' +
+            'Erro ao gravar os alertas, ' +
               (data.outputData?.message || data.outputData?.retorno)
           );
           this.carregandoInformacoes.set(false);
@@ -142,13 +142,11 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
         } else {
           this.notificarSucesso('Gravado com sucesso!');
           this.inicializaComponente();
-          this.carregandoInformacoes.set(false);
-          this.desabilitarFormulario(false);
         }
       },
       () => {
         this.notificarErro(
-          'Erro ao gravar a data retroativa, tente mais tarde ou contate o administrador'
+          'Erro ao gravar os alertas, tente mais tarde ou contate o administrador'
         );
         this.carregandoInformacoes.set(false);
         this.desabilitarFormulario(false);
