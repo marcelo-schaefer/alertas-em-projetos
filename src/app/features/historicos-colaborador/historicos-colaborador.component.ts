@@ -19,6 +19,7 @@ import { Persistencia } from './services/models/persistencia';
 import { format } from 'date-fns';
 import { Alerta } from './services/models/alerta';
 import { CadastroAlertaComponent } from './components/cadastro-alerta/cadastro-alerta.component';
+import { TokenService } from '../../core/services/token.service';
 
 @Component({
   selector: 'app-historicos-colaborador',
@@ -41,14 +42,16 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
   cadastroAlertaComponent: CadastroAlertaComponent | undefined;
 
   private informacoesColaboradorService = inject(InformacoesColaboradorService);
+  private tokenService = inject(TokenService);
 
   carregandoInformacoes = signal(false);
   listaAlertas: Alerta[] = [];
 
   constructor(private messageService: MessageService) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.carregandoInformacoes.set(true);
+    await this.checkInicializacao();
     this.inicializaComponente();
   }
 
@@ -58,6 +61,16 @@ export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
     this.preencherDadosAlertaCadastrado();
     this.carregandoInformacoes.set(false);
     this.desabilitarFormulario(false);
+  }
+
+  async checkInicializacao(): Promise<void> {
+    while (
+      !this.tokenService.token$.value?.accessToken ||
+      !this.tokenService.username
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      this.tokenService.carregarToken();
+    }
   }
 
   preencherDadosAlertaCadastrado(): void {
