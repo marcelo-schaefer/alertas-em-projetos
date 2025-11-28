@@ -1,11 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  inject,
-  OnInit,
-  signal,
-  ViewChild,
-} from '@angular/core';
+import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { CalendarModule } from 'primeng/calendar';
 import { InformacoesColaboradorService } from './services/informacoes-colaborador.service';
@@ -15,7 +8,6 @@ import { ToastModule } from 'primeng/toast';
 import { RippleModule } from 'primeng/ripple';
 import { MessageService } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { Persistencia } from './services/models/persistencia';
 import { format } from 'date-fns';
 import { Alerta } from './services/models/alerta';
 import { CadastroAlertaComponent } from './components/cadastro-alerta/cadastro-alerta.component';
@@ -37,7 +29,7 @@ import { TokenService } from '../../core/services/token.service';
   templateUrl: './historicos-colaborador.component.html',
   styleUrl: './historicos-colaborador.component.css',
 })
-export class HistoricosColaboradorComponent implements OnInit, AfterViewInit {
+export class HistoricosColaboradorComponent implements OnInit {
   @ViewChild(CadastroAlertaComponent, { static: true })
   cadastroAlertaComponent: CadastroAlertaComponent | undefined;
 
